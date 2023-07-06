@@ -53,6 +53,7 @@ export const LoginScreen = () => {
               style={{
                 ...styles.input,
                 borderColor: isEmailFocus ? "#FF6C00" : "#E8E8E8",
+                backgroundColor: isEmailFocus ? "white" : "#F6F6F6",
               }}
               placeholder="Адреса електронної пошти"
               placeholderTextColor="#BDBDBD"
@@ -65,6 +66,7 @@ export const LoginScreen = () => {
                 style={{
                   ...styles.input,
                   borderColor: isPasswordFocus ? "#FF6C00" : "#E8E8E8",
+                  backgroundColor: isPasswordFocus ? "white" : "#F6F6F6",
                 }}
                 placeholder="Пароль"
                 placeholderTextColor="#BDBDBD"

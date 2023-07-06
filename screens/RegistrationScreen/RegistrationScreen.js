@@ -24,6 +24,10 @@ export const RegistrationScreen = () => {
   const [isEmailFocus, setEmailFocus] = useState(false);
   const [isPasswordFocus, setPasswordFocus] = useState(false);
 
+  const [login, setLogin] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   useEffect(() => {
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
       setIsShowKeyboard(true);
@@ -60,34 +64,43 @@ export const RegistrationScreen = () => {
               style={{
                 ...styles.input,
                 borderColor: isLoginFocus ? "#FF6C00" : "#E8E8E8",
+                backgroundColor: isLoginFocus ? "white" : "#F6F6F6",
               }}
+              value={login}
               placeholder="Логін"
               placeholderTextColor="#BDBDBD"
               onFocus={() => setLoginFocus(true)}
               onBlur={() => setLoginFocus(false)}
+              onChangeText={setLogin}
             />
             <TextInput
               style={{
                 ...styles.input,
                 borderColor: isEmailFocus ? "#FF6C00" : "#E8E8E8",
+                backgroundColor: isEmailFocus ? "white" : "#F6F6F6",
               }}
+              value={email}
               placeholder="Адреса електронної пошти"
               placeholderTextColor="#BDBDBD"
               keyboardType="email-address"
               onFocus={() => setEmailFocus(true)}
               onBlur={() => setEmailFocus(false)}
+              onChangeText={setEmail}
             />
             <View>
               <TextInput
                 style={{
                   ...styles.input,
                   borderColor: isPasswordFocus ? "#FF6C00" : "#E8E8E8",
+                  backgroundColor: isPasswordFocus ? "white" : "#F6F6F6",
                 }}
                 placeholder="Пароль"
                 placeholderTextColor="#BDBDBD"
                 onFocus={() => setPasswordFocus(true)}
                 onBlur={() => setPasswordFocus(false)}
                 secureTextEntry={true}
+                onChangeText={setPassword}
+                value={password}
               />
               <TouchableOpacity style={styles.buttonShowPassword}>
                 <Text style={styles.buttonShowPassword.text}>Показати</Text>
