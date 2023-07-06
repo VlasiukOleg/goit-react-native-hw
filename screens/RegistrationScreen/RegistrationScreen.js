@@ -1,3 +1,6 @@
+import { useEffect } from "react";
+import { useState } from "react";
+
 import {
   ImageBackground,
   View,
@@ -7,50 +10,100 @@ import {
   TextInput,
   TouchableOpacity,
   KeyboardAvoidingView,
+  Keyboard,
 } from "react-native";
 import MainBgImage from "../../assets/img/main-bg-image.jpg";
 
-import RegistrationImage from "../../assets/img/registration-bg.png";
+import FormImageBg from "../../assets/img/registration-bg.png";
 import AddPhoto from "../../assets/img/add-photo.png";
 import AddPhotoIcon from "../../assets/img/add-icon.png";
 
 export const RegistrationScreen = () => {
+  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const [isLoginFocus, setLoginFocus] = useState(false);
+  const [isEmailFocus, setEmailFocus] = useState(false);
+  const [isPasswordFocus, setPasswordFocus] = useState(false);
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setIsShowKeyboard(true);
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setIsShowKeyboard(false);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
   return (
-    <KeyboardAvoidingView style={styles.container}>
+    <View style={styles.container}>
       <ImageBackground source={MainBgImage} style={styles.image}>
-        <Image style={styles.registration} source={RegistrationImage} />
-        <View style={styles.inputWrapper}>
-          <TouchableOpacity style={styles.btnAdd}>
-            <Image source={AddPhotoIcon} style={styles.icon} />
-          </TouchableOpacity>
+        <KeyboardAvoidingView>
+          <View
+            style={{
+              ...styles.form,
+              marginBottom: isShowKeyboard ? -25 : 55,
+            }}
+          >
+            <Image source={FormImageBg} style={styles.formImageBg} />
+            <TouchableOpacity style={styles.btnAdd}>
+              <Image source={AddPhotoIcon} style={styles.icon} />
+            </TouchableOpacity>
 
-          <Image source={AddPhoto} />
+            <Image source={AddPhoto} style={styles.imageAvatar} />
 
-          <Text style={styles.registration_header}>Реєстрація</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Логін"
-            placeholderTextColor="#BDBDBD"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Адреса електронної пошти"
-            placeholderTextColor="#BDBDBD"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Пароль"
-            placeholderTextColor="#BDBDBD"
-          />
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.button.text}>Зареєструватися</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button_enter}>
-            <Text style={styles.button_enter.text}>Вже є акаунт? Увійти</Text>
-          </TouchableOpacity>
-        </View>
+            <Text style={styles.formTitle}>Реєстрація</Text>
+            <TextInput
+              style={{
+                ...styles.input,
+                borderColor: isLoginFocus ? "#FF6C00" : "#E8E8E8",
+              }}
+              placeholder="Логін"
+              placeholderTextColor="#BDBDBD"
+              onFocus={() => setLoginFocus(true)}
+              onBlur={() => setLoginFocus(false)}
+            />
+            <TextInput
+              style={{
+                ...styles.input,
+                borderColor: isEmailFocus ? "#FF6C00" : "#E8E8E8",
+              }}
+              placeholder="Адреса електронної пошти"
+              placeholderTextColor="#BDBDBD"
+              keyboardType="email-address"
+              onFocus={() => setEmailFocus(true)}
+              onBlur={() => setEmailFocus(false)}
+            />
+            <View>
+              <TextInput
+                style={{
+                  ...styles.input,
+                  borderColor: isPasswordFocus ? "#FF6C00" : "#E8E8E8",
+                }}
+                placeholder="Пароль"
+                placeholderTextColor="#BDBDBD"
+                onFocus={() => setPasswordFocus(true)}
+                onBlur={() => setPasswordFocus(false)}
+                secureTextEntry={true}
+              />
+              <TouchableOpacity style={styles.buttonShowPassword}>
+                <Text style={styles.buttonShowPassword.text}>Показати</Text>
+              </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity style={styles.button}>
+              <Text style={styles.button.text}>Зареєструватися</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.buttonEnter}>
+              <Text style={styles.buttonEnter.text}>Вже є акаунт? Увійти</Text>
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
       </ImageBackground>
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 
@@ -58,10 +111,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  registration: {
+  formImageBg: {
     position: "absolute",
-    width: 380,
+    bottom: -55,
   },
+  imageAvatar: {
+    alignItems: "center",
+    textAlign: "center",
+  },
+
   icon: {
     left: 58,
     bottom: -105,
@@ -71,9 +129,10 @@ const styles = StyleSheet.create({
   },
   image: {
     flex: 1,
+    resizeMode: "cover",
     justifyContent: "flex-end",
   },
-  registration_header: {
+  formTitle: {
     fontSize: 30,
     textAlign: "center",
     fontWeight: 500,
@@ -90,10 +149,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#F6F6F6",
     borderColor: "#E8E8E8",
   },
-  inputWrapper: {
-    bottom: 55,
+  form: {
     alignItems: "center",
   },
+
   button: {
     maxWidth: 343,
     backgroundColor: "#FF6C00",
@@ -108,9 +167,19 @@ const styles = StyleSheet.create({
       fontSize: 16,
     },
   },
-  button_enter: {
+  buttonEnter: {
     fontSize: 16,
-
+    alignItems: "center",
+    text: {
+      color: "#1B4371",
+    },
+  },
+  buttonShowPassword: {
+    position: "absolute",
+    right: 20,
+    top: 13,
+    fontSize: 16,
+    alignItems: "center",
     text: {
       color: "#1B4371",
     },
