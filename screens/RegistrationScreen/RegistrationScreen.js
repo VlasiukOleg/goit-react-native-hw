@@ -19,6 +19,7 @@ import MainBgImage from "../../assets/img/main-bg-image.jpg";
 import FormImageBg from "../../assets/img/registration-bg.png";
 import AddPhoto from "../../assets/img/add-photo.png";
 import AddPhotoIcon from "../../assets/img/add-icon.png";
+import { useNavigation } from "@react-navigation/native";
 
 export const RegistrationScreen = () => {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
@@ -29,6 +30,8 @@ export const RegistrationScreen = () => {
   const [login, setLogin] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const navigation = useNavigation();
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
@@ -45,11 +48,10 @@ export const RegistrationScreen = () => {
   }, []);
 
   const handleSubmit = () => {
-    Alert.alert(`${login}, ${email}, ${password} `);
-
     setLogin("");
     setEmail("");
     setPassword("");
+    navigation.navigate("HomeScreen");
   };
 
   return (
@@ -125,7 +127,10 @@ export const RegistrationScreen = () => {
                 Зареєструватися
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.buttonEnter}>
+            <TouchableOpacity
+              style={styles.buttonEnter}
+              onPress={() => navigation.navigate("Login")}
+            >
               <Text style={styles.buttonEnter.text}>Вже є акаунт? Увійти</Text>
             </TouchableOpacity>
           </View>
@@ -145,7 +150,6 @@ const styles = StyleSheet.create({
   },
   imageAvatar: {
     alignItems: "center",
-    textAlign: "center",
   },
 
   icon: {

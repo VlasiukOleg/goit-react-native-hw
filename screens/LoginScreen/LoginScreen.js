@@ -17,6 +17,7 @@ import {
 import MainBgImage from "../../assets/img/main-bg-image.jpg";
 
 import FormImageBg from "../../assets/img/login-bg.png";
+import { useNavigation } from "@react-navigation/native";
 
 export const LoginScreen = () => {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
@@ -25,6 +26,8 @@ export const LoginScreen = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const navigation = useNavigation();
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
@@ -41,10 +44,11 @@ export const LoginScreen = () => {
   }, []);
 
   const handleSubmit = () => {
-    Alert.alert(` ${email}, ${password} `);
+    // Alert.alert(` ${email}, ${password} `);
 
     setEmail("");
     setPassword("");
+    navigation.navigate("HomeScreen");
   };
 
   return (
@@ -103,7 +107,10 @@ export const LoginScreen = () => {
                 Увійти
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.buttonEnter}>
+            <TouchableOpacity
+              style={styles.buttonEnter}
+              onPress={() => navigation.navigate("Registration")}
+            >
               <Text style={styles.buttonEnter.text}>
                 Немає акаунту? Зареєструватися
               </Text>
