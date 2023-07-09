@@ -64,7 +64,7 @@ export const RegistrationScreen = () => {
           <View
             style={{
               ...styles.form,
-              marginBottom: isShowKeyboard ? -40 : 45,
+              marginBottom: isShowKeyboard ? -50 : 45,
             }}
           >
             <Image source={FormImageBg} style={styles.formImageBg} />

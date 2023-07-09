@@ -32,12 +32,12 @@ export default function App() {
         <MainStack.Screen
           name="HomeScreen"
           component={HomeScreen}
-          options={headerPostsOptions}
+          // options={headerPostsOptions}
+          options={{ headerShown: false }}
         />
         <MainStack.Screen
           name="CreatePostsScreen"
           component={CreatePostsScreen}
-          options={headerСreatePostsOptions}
         />
       </MainStack.Navigator>
     </NavigationContainer>
@@ -53,25 +53,3 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
 });
-
-const headerPostsOptions = {
-  title: "Публікації",
-  headerLeft: () => null,
-  headerRight: () => <LogOutBtn />,
-
-  headerTitleAlign: "center",
-  headerTitleStyle: styles.titlePostsScreen,
-  headerStyle: styles.headerPostsScreen,
-  headerRightContainerStyle: { paddingRight: 10 },
-};
-
-const headerСreatePostsOptions = {
-  title: "Створити публікацію",
-  // headerLeft: () => null,
-  headerRight: () => <LogOutBtn />,
-
-  headerTitleAlign: "center",
-  headerTitleStyle: styles.titlePostsScreen,
-  headerStyle: styles.headerPostsScreen,
-  headerRightContainerStyle: { paddingRight: 10 },
-};
