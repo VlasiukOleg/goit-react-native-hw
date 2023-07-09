@@ -57,6 +57,8 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     paddingHorizontal: 19,
     paddingVertical: 0,
+    paddingBottom: 10,
+    backgroundColor: "#FFFFFF",
   },
   addCameraPhotoIcon: {
     position: "absolute",
@@ -94,7 +96,7 @@ const styles = StyleSheet.create({
     },
   },
   deletePublicIcon: {
-    marginTop: 100,
+    marginTop: 80,
     alignItems: "center",
   },
 });
