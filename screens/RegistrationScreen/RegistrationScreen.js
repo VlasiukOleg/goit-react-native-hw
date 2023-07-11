@@ -7,19 +7,20 @@ import {
   Text,
   Image,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   KeyboardAvoidingView,
   Keyboard,
-  Alert,
 } from "react-native";
 import { TouchableWithoutFeedback } from "react-native";
+
+import { useForm } from "react-hook-form";
 
 import MainBgImage from "../../assets/img/main-bg-image.jpg";
 import FormImageBg from "../../assets/img/registration-bg.png";
 import AddPhoto from "../../assets/img/add-photo.png";
 import AddPhotoIcon from "../../assets/img/add-icon.png";
 import { useNavigation } from "@react-navigation/native";
+import { CustomInput } from "../CustomInput/CustomInput";
 
 export const RegistrationScreen = () => {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
@@ -27,11 +28,16 @@ export const RegistrationScreen = () => {
   const [isEmailFocus, setEmailFocus] = useState(false);
   const [isPasswordFocus, setPasswordFocus] = useState(false);
 
-  const [login, setLogin] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
   const navigation = useNavigation();
+
+  const EMAIL_REGEX =
+    /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
@@ -47,10 +53,7 @@ export const RegistrationScreen = () => {
     };
   }, []);
 
-  const handleSubmit = () => {
-    setLogin("");
-    setEmail("");
-    setPassword("");
+  const onSubmit = () => {
     navigation.navigate("HomeScreen");
   };
 
@@ -75,47 +78,42 @@ export const RegistrationScreen = () => {
             <Image source={AddPhoto} style={styles.imageAvatar} />
 
             <Text style={styles.formTitle}>Реєстрація</Text>
-            <TextInput
-              style={{
-                ...styles.input,
-                borderColor: isLoginFocus ? "#FF6C00" : "#E8E8E8",
-                backgroundColor: isLoginFocus ? "white" : "#F6F6F6",
-              }}
-              value={login}
+            <CustomInput
+              control={control}
+              name="login"
               placeholder="Логін"
-              placeholderTextColor="#BDBDBD"
-              onFocus={() => setLoginFocus(true)}
-              onBlur={() => setLoginFocus(false)}
-              onChangeText={setLogin}
+              isLoginFocus={isLoginFocus}
+              setFocus={setLoginFocus}
+              rules={{ required: "*Логін обов'язкове поле" }}
             />
-            <TextInput
-              style={{
-                ...styles.input,
-                borderColor: isEmailFocus ? "#FF6C00" : "#E8E8E8",
-                backgroundColor: isEmailFocus ? "white" : "#F6F6F6",
-              }}
-              value={email}
+            {errors.email && (
+              <Text style={{ color: "red", marginTop: -14, marginBottom: 4 }}>
+                Електронна пошта невірна
+              </Text>
+            )}
+            <CustomInput
+              control={control}
+              name="email"
               placeholder="Адреса електронної пошти"
-              placeholderTextColor="#BDBDBD"
-              keyboardType="email-address"
-              onFocus={() => setEmailFocus(true)}
-              onBlur={() => setEmailFocus(false)}
-              onChangeText={setEmail}
+              isLoginFocus={isEmailFocus}
+              setFocus={setEmailFocus}
+              rules={{
+                required: "Адреса електронної пошти",
+                pattern: EMAIL_REGEX,
+              }}
             />
+
             <View>
-              <TextInput
-                style={{
-                  ...styles.input,
-                  borderColor: isPasswordFocus ? "#FF6C00" : "#E8E8E8",
-                  backgroundColor: isPasswordFocus ? "white" : "#F6F6F6",
-                }}
+              <CustomInput
+                control={control}
+                name="password"
                 placeholder="Пароль"
-                placeholderTextColor="#BDBDBD"
-                onFocus={() => setPasswordFocus(true)}
-                onBlur={() => setPasswordFocus(false)}
+                isLoginFocus={isPasswordFocus}
+                setFocus={setPasswordFocus}
                 secureTextEntry={true}
-                onChangeText={setPassword}
-                value={password}
+                rules={{
+                  required: "Пароль обов'язкове поле",
+                }}
               />
               <TouchableOpacity style={styles.buttonShowPassword}>
                 <Text style={styles.buttonShowPassword.text}>Показати</Text>
@@ -123,7 +121,7 @@ export const RegistrationScreen = () => {
             </View>
 
             <TouchableOpacity style={styles.button}>
-              <Text style={styles.button.text} onPress={handleSubmit}>
+              <Text style={styles.button.text} onPress={handleSubmit(onSubmit)}>
                 Зареєструватися
               </Text>
             </TouchableOpacity>
@@ -171,16 +169,7 @@ const styles = StyleSheet.create({
     margin: 33,
     marginVertical: 32,
   },
-  input: {
-    width: 343,
-    height: 50,
-    marginBottom: 16,
-    borderWidth: 1,
-    padding: 16,
-    borderRadius: 10,
-    backgroundColor: "#F6F6F6",
-    borderColor: "#E8E8E8",
-  },
+
   form: {
     alignItems: "center",
   },

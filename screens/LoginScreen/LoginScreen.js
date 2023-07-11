@@ -12,22 +12,31 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   TouchableWithoutFeedback,
-  Alert,
 } from "react-native";
+import { CustomInput } from "../CustomInput/CustomInput";
 import MainBgImage from "../../assets/img/main-bg-image.jpg";
 
 import FormImageBg from "../../assets/img/login-bg.png";
 import { useNavigation } from "@react-navigation/native";
+
+import { useForm } from "react-hook-form";
+
+const EMAIL_REGEX =
+  /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
 export const LoginScreen = () => {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [isEmailFocus, setEmailFocus] = useState(false);
   const [isPasswordFocus, setPasswordFocus] = useState(false);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
   const navigation = useNavigation();
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm();
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
@@ -43,12 +52,9 @@ export const LoginScreen = () => {
     };
   }, []);
 
-  const handleSubmit = () => {
-    // Alert.alert(` ${email}, ${password} `);
-
-    setEmail("");
-    setPassword("");
+  const onSubmit = () => {
     navigation.navigate("HomeScreen");
+    reset();
   };
 
   return (
@@ -67,35 +73,34 @@ export const LoginScreen = () => {
             <Image source={FormImageBg} style={styles.formImageBg} />
 
             <Text style={styles.formTitle}>Увійти</Text>
-
-            <TextInput
-              style={{
-                ...styles.input,
-                borderColor: isEmailFocus ? "#FF6C00" : "#E8E8E8",
-                backgroundColor: isEmailFocus ? "white" : "#F6F6F6",
-              }}
-              value={email}
+            {errors.email && (
+              <Text style={{ color: "red", marginTop: -24, marginBottom: 4 }}>
+                Електронна пошта невірна
+              </Text>
+            )}
+            <CustomInput
+              control={control}
+              name="email"
               placeholder="Адреса електронної пошти"
-              placeholderTextColor="#BDBDBD"
-              keyboardType="email-address"
-              onFocus={() => setEmailFocus(true)}
-              onBlur={() => setEmailFocus(false)}
-              onChangeText={setEmail}
+              isLoginFocus={isEmailFocus}
+              setFocus={setEmailFocus}
+              rules={{
+                required: "Адреса електронної пошти",
+                pattern: EMAIL_REGEX,
+              }}
             />
+
             <View>
-              <TextInput
-                style={{
-                  ...styles.input,
-                  borderColor: isPasswordFocus ? "#FF6C00" : "#E8E8E8",
-                  backgroundColor: isPasswordFocus ? "white" : "#F6F6F6",
-                }}
-                value={password}
+              <CustomInput
+                control={control}
+                name="password"
                 placeholder="Пароль"
-                placeholderTextColor="#BDBDBD"
-                onFocus={() => setPasswordFocus(true)}
-                onBlur={() => setPasswordFocus(false)}
+                isLoginFocus={isPasswordFocus}
+                setFocus={setPasswordFocus}
                 secureTextEntry={true}
-                onChangeText={setPassword}
+                rules={{
+                  required: "Пароль обов'язкове поле",
+                }}
               />
               <TouchableOpacity style={styles.buttonShowPassword}>
                 <Text style={styles.buttonShowPassword.text}>Показати</Text>
@@ -103,7 +108,7 @@ export const LoginScreen = () => {
             </View>
 
             <TouchableOpacity style={styles.button}>
-              <Text style={styles.button.text} onPress={handleSubmit}>
+              <Text style={styles.button.text} onPress={handleSubmit(onSubmit)}>
                 Увійти
               </Text>
             </TouchableOpacity>
