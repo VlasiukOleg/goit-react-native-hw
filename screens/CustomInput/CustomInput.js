@@ -9,6 +9,7 @@ export const CustomInput = ({
   secureTextEntry,
   isLoginFocus,
   rules = {},
+  errorColorText,
 }) => {
   return (
     <Controller
@@ -25,7 +26,7 @@ export const CustomInput = ({
             }}
             value={value}
             placeholder={error ? error.message : placeholder}
-            placeholderTextColor={error ? "red" : "#BDBDBD"}
+            placeholderTextColor={error ? errorColorText : "#BDBDBD"}
             onFocus={() => setFocus(true)}
             onBlur={() => setFocus(false)}
             onChangeText={onChange}

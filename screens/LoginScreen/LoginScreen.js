@@ -74,7 +74,14 @@ export const LoginScreen = () => {
 
             <Text style={styles.formTitle}>Увійти</Text>
             {errors.email && (
-              <Text style={{ color: "red", marginTop: -24, marginBottom: 4 }}>
+              <Text
+                style={{
+                  color: "red",
+                  marginTop: -21,
+                  marginBottom: 4,
+                  fontSize: 12,
+                }}
+              >
                 Електронна пошта невірна
               </Text>
             )}
@@ -88,6 +95,7 @@ export const LoginScreen = () => {
                 required: "Адреса електронної пошти",
                 pattern: EMAIL_REGEX,
               }}
+              errorColorText="#BDBDBD"
             />
 
             <View>
@@ -101,6 +109,7 @@ export const LoginScreen = () => {
                 rules={{
                   required: "Пароль обов'язкове поле",
                 }}
+                errorColorText="red"
               />
               <TouchableOpacity style={styles.buttonShowPassword}>
                 <Text style={styles.buttonShowPassword.text}>Показати</Text>

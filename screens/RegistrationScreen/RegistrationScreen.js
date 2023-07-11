@@ -84,10 +84,18 @@ export const RegistrationScreen = () => {
               placeholder="Логін"
               isLoginFocus={isLoginFocus}
               setFocus={setLoginFocus}
-              rules={{ required: "*Логін обов'язкове поле" }}
+              rules={{ required: "Логін обов'язкове поле" }}
+              errorColorText="red"
             />
             {errors.email && (
-              <Text style={{ color: "red", marginTop: -14, marginBottom: 4 }}>
+              <Text
+                style={{
+                  color: "red",
+                  marginTop: -8,
+                  marginBottom: 4,
+                  fontSize: 12,
+                }}
+              >
                 Електронна пошта невірна
               </Text>
             )}
@@ -101,6 +109,7 @@ export const RegistrationScreen = () => {
                 required: "Адреса електронної пошти",
                 pattern: EMAIL_REGEX,
               }}
+              errorColorText="#BDBDBD"
             />
 
             <View>
@@ -114,6 +123,7 @@ export const RegistrationScreen = () => {
                 rules={{
                   required: "Пароль обов'язкове поле",
                 }}
+                errorColorText="red"
               />
               <TouchableOpacity style={styles.buttonShowPassword}>
                 <Text style={styles.buttonShowPassword.text}>Показати</Text>
