@@ -11,13 +11,20 @@ import PublicAddPhoto from "../../assets/img/public-add-photo.png";
 import CameraAddPhotoIcon from "../../assets/img/add-photo-camera.png";
 import mapIcon from "../../assets/img/map-icon.png";
 import deleteIcon from "../../assets/img/delete-icon.png";
+import { useNavigation } from "@react-navigation/native";
 
 export const CreatePostsScreen = () => {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       <View>
         <Image source={PublicAddPhoto}></Image>
-        <TouchableOpacity style={styles.addCameraPhotoIcon}>
+        <TouchableOpacity
+          style={styles.addCameraPhotoIcon}
+          onPress={() => {
+            navigation.navigate("CameraScreen");
+          }}
+        >
           <Image source={CameraAddPhotoIcon}></Image>
         </TouchableOpacity>
       </View>

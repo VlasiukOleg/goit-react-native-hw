@@ -1,8 +1,12 @@
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 
 import UserAvatar from "../../assets/img/avatar-image.png";
 
+import mapIcon from "../../assets/img/map-icon.png";
+import { useNavigation } from "@react-navigation/native";
+
 export const PostsScreen = () => {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       <View style={styles.userWrap}>
@@ -12,6 +16,9 @@ export const PostsScreen = () => {
           <Text style={styles.userInfo.email}>natali@gmail.com</Text>
         </View>
       </View>
+      <TouchableOpacity onPress={() => navigation.navigate("MapScreen")}>
+        <Image source={mapIcon}></Image>
+      </TouchableOpacity>
     </View>
   );
 };

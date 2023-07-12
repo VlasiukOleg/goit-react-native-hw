@@ -8,7 +8,8 @@ import { CreatePostsScreen } from "./screens/CreatePostsScreen/CreatePostsScreen
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { HomeScreen } from "./screens/Home/Home";
-import { LogOutBtn } from "./screens/Home/ButtonLogOut";
+import { MapScreen } from "./screens/MapScreen/MapScreen";
+import { CameraScreen } from "./screens/СameraScreen/CamerScreen";
 import { StyleSheet } from "react-native";
 
 const MainStack = createStackNavigator();
@@ -39,6 +40,8 @@ export default function App() {
           name="CreatePostsScreen"
           component={CreatePostsScreen}
         />
+        <MainStack.Screen name="MapScreen" component={MapScreen} />
+        <MainStack.Screen name="CameraScreen" component={CameraScreen} />
       </MainStack.Navigator>
     </NavigationContainer>
   );
