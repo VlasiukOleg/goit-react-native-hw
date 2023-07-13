@@ -20,6 +20,8 @@ export const PostsTabs = () => {
       screenOptions={({ route }) => ({
         tabBarStyle: { height: 60, paddingHorizontal: 80 },
         tabBarShowLabel: false,
+        tabBarActiveTintColor: "#FF6C00",
+        tabBarInactiveTintColor: "gray",
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
@@ -33,10 +35,10 @@ export const PostsTabs = () => {
           return <Ionicons name={iconName} size={size} color={color} />;
         },
       })}
-      tabBarOptions={{
-        activeTintColor: "#FF6C00",
-        inactiveTintColor: "gray",
-      }}
+      // tabBarOptions={{
+      //   activeTintColor: "#FF6C00",
+      //   inactiveTintColor: "gray",
+      // }}
     >
       <Tabs.Screen
         name="Home"

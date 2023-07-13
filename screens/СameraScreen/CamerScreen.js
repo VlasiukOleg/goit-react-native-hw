@@ -16,11 +16,14 @@ export const CameraScreen = () => {
   }, []);
 
   const takePicture = async () => {
+    setImage(null);
     if (cameraRef) {
       const { uri } = await cameraRef.takePictureAsync();
       setImage(uri);
     }
   };
+
+  console.log(image);
 
   if (hasPermission === false) {
     return <Text>No access to camera</Text>;
@@ -57,7 +60,7 @@ export const CameraScreen = () => {
         </View>
       </Camera>
       <View style={styles.cameraPhotoBox}>
-        {image && <Image source={{ uri: image }} />}
+        {image && <Image source={{ uri: image }} style={{ flex: 1 }} />}
       </View>
     </View>
   );
@@ -101,6 +104,6 @@ const styles = StyleSheet.create({
 
   cameraPhotoBox: {
     height: 200,
-    width: 200,
+    width: "100%",
   },
 });
