@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Text, View, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { Camera } from "expo-camera";
 
@@ -22,8 +22,6 @@ export const CameraScreen = () => {
       setImage(uri);
     }
   };
-
-  console.log(image);
 
   if (hasPermission === false) {
     return <Text>No access to camera</Text>;

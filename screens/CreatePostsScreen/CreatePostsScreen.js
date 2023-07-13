@@ -13,20 +13,63 @@ import mapIcon from "../../assets/img/map-icon.png";
 import deleteIcon from "../../assets/img/delete-icon.png";
 import { useNavigation } from "@react-navigation/native";
 
+import { Camera } from "expo-camera";
+import { useState, useEffect } from "react";
+
 export const CreatePostsScreen = () => {
+  const [hasPermission, setHasPermission] = useState(null);
+  const [cameraRef, setCameraRef] = useState(null);
+  const [type, setType] = useState(Camera.Constants.Type.back);
+  const [image, setImage] = useState(null);
+
   const navigation = useNavigation();
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      setHasPermission(status === "granted");
+    })();
+  }, []);
+
+  const deletePicture = () => {
+    setImage(null);
+    console.log("Press Delete");
+  };
+
+  console.log(image);
+
+  const takePicture = async () => {
+    if (cameraRef) {
+      const { uri } = await cameraRef.takePictureAsync();
+      setImage(uri);
+    }
+  };
+  console.log(image);
+
+  if (hasPermission === false) {
+    return <Text>No access to camera</Text>;
+  }
+
   return (
     <View style={styles.container}>
-      <View>
-        <Image source={PublicAddPhoto}></Image>
-        <TouchableOpacity
-          style={styles.addCameraPhotoIcon}
-          onPress={() => {
-            navigation.navigate("CameraScreen");
-          }}
-        >
-          <Image source={CameraAddPhotoIcon}></Image>
-        </TouchableOpacity>
+      <View style={styles.photoView}>
+        {/* <Image source={PublicAddPhoto}></Image> */}
+        {!image ? (
+          <Camera
+            style={styles.camera}
+            type={type}
+            ref={(ref) => setCameraRef(ref)}
+          >
+            <TouchableOpacity
+              style={styles.addCameraPhotoIcon}
+              onPress={() => takePicture()}
+            >
+              <Image source={CameraAddPhotoIcon}></Image>
+            </TouchableOpacity>
+          </Camera>
+        ) : (
+          <Image source={{ uri: image }} style={{ flex: 1 }} />
+        )}
       </View>
 
       <TouchableOpacity style={styles.addPhotoBtn}>
@@ -47,10 +90,19 @@ export const CreatePostsScreen = () => {
           <Image source={mapIcon} style={styles.mapIcon}></Image>
         </View>
 
-        <TouchableOpacity style={styles.publicBtn} disabled>
+        <TouchableOpacity
+          style={{
+            ...styles.publicBtn,
+            backgroundColor: image ? "#FF6C00" : "#F6F6F6",
+          }}
+          disabled={image ? false : true}
+        >
           <Text style={styles.publicBtn.text}>Опублікувати</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.deletePublicIcon}>
+        <TouchableOpacity
+          style={styles.deletePublicIcon}
+          onPress={deletePicture}
+        >
           <Image source={deleteIcon}></Image>
         </TouchableOpacity>
       </View>
@@ -66,6 +118,13 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
     paddingBottom: 10,
     backgroundColor: "#FFFFFF",
+  },
+  camera: { flex: 1 },
+  photoView: {
+    flex: 0.9,
+    backgroundColor: "transparent",
+    borderRadius: 10,
+    overflow: "hidden",
   },
   addCameraPhotoIcon: {
     position: "absolute",
@@ -95,15 +154,15 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 120,
     borderRadius: 25,
-    backgroundColor: "#F6F6F6",
-    marginTop: 32,
+    // backgroundColor: "#F6F6F6",
+    marginTop: 28,
     text: {
       color: "#BDBDBD",
       fontSize: 16,
     },
   },
   deletePublicIcon: {
-    marginTop: 80,
+    marginTop: 60,
     alignItems: "center",
   },
 });
