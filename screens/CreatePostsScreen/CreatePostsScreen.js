@@ -7,20 +7,27 @@ import {
   Text,
 } from "react-native";
 
-import PublicAddPhoto from "../../assets/img/public-add-photo.png";
 import CameraAddPhotoIcon from "../../assets/img/add-photo-camera.png";
 import mapIcon from "../../assets/img/map-icon.png";
-import deleteIcon from "../../assets/img/delete-icon.png";
 import { useNavigation } from "@react-navigation/native";
 
 import { Camera } from "expo-camera";
 import { useState, useEffect } from "react";
+
+import * as Location from "expo-location";
+
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 export const CreatePostsScreen = () => {
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [image, setImage] = useState(null);
+
+  const [photoName, setPhotoName] = useState("");
+  const [photoLocation, setPhotoLocation] = useState("");
+
+  const [location, setLocation] = useState(null);
 
   const navigation = useNavigation();
 
@@ -29,14 +36,27 @@ export const CreatePostsScreen = () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
       setHasPermission(status === "granted");
     })();
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      const coords = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      };
+      setLocation(coords);
+    })();
   }, []);
 
   const deletePicture = () => {
     setImage(null);
-    console.log("Press Delete");
+    setPhotoName("");
+    setPhotoLocation("");
   };
-
-  console.log(image);
 
   const takePicture = async () => {
     if (cameraRef) {
@@ -44,16 +64,33 @@ export const CreatePostsScreen = () => {
       setImage(uri);
     }
   };
+
+  console.log(location);
   console.log(image);
+
+  const onPublish = () => {
+    console.log(photoName);
+    navigation.navigate("Home", {
+      postName: photoName,
+      postLocation: photoLocation,
+      userLocation: JSON.stringify(location),
+      imagePosts: image,
+      postView: true,
+    });
+    setImage(null);
+    setPhotoName("");
+    setPhotoLocation("");
+  };
 
   if (hasPermission === false) {
     return <Text>No access to camera</Text>;
   }
 
+  const isActiveBtn = image && photoName && photoLocation;
+
   return (
     <View style={styles.container}>
       <View style={styles.photoView}>
-        {/* <Image source={PublicAddPhoto}></Image> */}
         {!image ? (
           <Camera
             style={styles.camera}
@@ -80,12 +117,16 @@ export const CreatePostsScreen = () => {
           style={styles.input}
           placeholder="Назва..."
           placeholderTextColor="#BDBDBD"
+          onChangeText={setPhotoName}
+          value={photoName}
         ></TextInput>
         <View>
           <TextInput
             style={{ ...styles.input, paddingLeft: 30 }}
             placeholder="Місцевість..."
             placeholderTextColor="#BDBDBD"
+            onChangeText={setPhotoLocation}
+            value={photoLocation}
           ></TextInput>
           <Image source={mapIcon} style={styles.mapIcon}></Image>
         </View>
@@ -93,17 +134,34 @@ export const CreatePostsScreen = () => {
         <TouchableOpacity
           style={{
             ...styles.publicBtn,
-            backgroundColor: image ? "#FF6C00" : "#F6F6F6",
+            backgroundColor: isActiveBtn ? "#FF6C00" : "#F6F6F6",
           }}
-          disabled={image ? false : true}
+          // disabled={image ? false : true}
+          disabled={false}
         >
-          <Text style={styles.publicBtn.text}>Опублікувати</Text>
+          <Text
+            style={{
+              ...styles.publicBtn.text,
+              color: isActiveBtn ? "white" : "#BDBDBD",
+            }}
+            onPress={onPublish}
+          >
+            Опублікувати
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.deletePublicIcon}
+          style={{
+            ...styles.deletePublicIcon,
+            backgroundColor: image ? "#FF6C00" : "#F6F6F6",
+          }}
           onPress={deletePicture}
+          disabled={isActiveBtn ? false : true}
         >
-          <Image source={deleteIcon}></Image>
+          <Ionicons
+            name="trash-outline"
+            size={24}
+            color={image ? "white" : "#BDBDBD"}
+          />
         </TouchableOpacity>
       </View>
     </View>
@@ -113,10 +171,9 @@ export const CreatePostsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "flex-end",
+    justifyContent: "center",
     paddingHorizontal: 19,
-    paddingVertical: 0,
-    paddingBottom: 10,
+    paddingVertical: 10,
     backgroundColor: "#FFFFFF",
   },
   camera: { flex: 1 },
@@ -154,7 +211,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 120,
     borderRadius: 25,
-    // backgroundColor: "#F6F6F6",
+
     marginTop: 28,
     text: {
       color: "#BDBDBD",
@@ -162,7 +219,12 @@ const styles = StyleSheet.create({
     },
   },
   deletePublicIcon: {
+    width: 70,
+    paddingVertical: 8,
+    paddingHorizontal: 23,
     marginTop: 60,
-    alignItems: "center",
+    borderRadius: 25,
+    backgroundColor: "#F6F6F6",
+    left: "40%",
   },
 });

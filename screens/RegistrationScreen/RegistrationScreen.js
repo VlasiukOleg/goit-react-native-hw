@@ -59,18 +59,18 @@ export const RegistrationScreen = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS == "ios" ? "padding" : "height"}
-        style={styles.container}
-      >
-        <ImageBackground source={MainBgImage} style={styles.image}>
+      <ImageBackground source={MainBgImage} style={styles.image}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS == "ios" ? "padding" : "height"}
+          // style={styles.container}
+        >
           <View
             style={{
               ...styles.form,
-              marginBottom: isShowKeyboard ? -50 : 45,
+              marginBottom: isShowKeyboard ? 80 : 0,
             }}
           >
-            <Image source={FormImageBg} style={styles.formImageBg} />
+            {/* <Image source={FormImageBg} style={styles.formImageBg} /> */}
             <TouchableOpacity style={styles.btnAdd}>
               <Image source={AddPhotoIcon} style={styles.icon} />
             </TouchableOpacity>
@@ -142,8 +142,8 @@ export const RegistrationScreen = () => {
               <Text style={styles.buttonEnter.text}>Вже є акаунт? Увійти</Text>
             </TouchableOpacity>
           </View>
-        </ImageBackground>
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+      </ImageBackground>
     </TouchableWithoutFeedback>
   );
 };
@@ -157,12 +157,14 @@ const styles = StyleSheet.create({
     bottom: -55,
   },
   imageAvatar: {
+    position: "absolute",
+    top: "-13%",
     alignItems: "center",
   },
 
   icon: {
     left: 58,
-    bottom: -105,
+    bottom: "-40%",
   },
   btnAdd: {
     zIndex: 10,
@@ -182,10 +184,13 @@ const styles = StyleSheet.create({
 
   form: {
     alignItems: "center",
+    backgroundColor: "white",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingBottom: 45,
   },
 
   button: {
-    maxWidth: 343,
     backgroundColor: "#FF6C00",
 
     paddingVertical: 16,

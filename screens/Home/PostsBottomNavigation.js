@@ -35,10 +35,6 @@ export const PostsTabs = () => {
           return <Ionicons name={iconName} size={size} color={color} />;
         },
       })}
-      // tabBarOptions={{
-      //   activeTintColor: "#FF6C00",
-      //   inactiveTintColor: "gray",
-      // }}
     >
       <Tabs.Screen
         name="Home"
@@ -48,7 +44,7 @@ export const PostsTabs = () => {
       <Tabs.Screen
         name="CreatePostsScreen"
         component={CreatePostsScreen}
-        options={headerСreatePostsOptions}
+        options={headerCreatePostsOptions}
       />
       <Tabs.Screen
         name="ProfileScreen"
@@ -80,7 +76,7 @@ const headerPostsOptions = {
   headerRightContainerStyle: { paddingRight: 10 },
 };
 
-const headerСreatePostsOptions = {
+const headerCreatePostsOptions = {
   title: "Створити публікацію",
   headerLeft: () => <BackBtn />,
 

@@ -59,18 +59,18 @@ export const LoginScreen = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS == "ios" ? "padding" : "height"}
-        style={styles.container}
-      >
-        <ImageBackground source={MainBgImage} style={styles.image}>
+      <ImageBackground source={MainBgImage} style={styles.image}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS == "ios" ? "padding" : "height"}
+          // style={styles.container}
+        >
           <View
             style={{
               ...styles.form,
-              marginBottom: isShowKeyboard ? -25 : 120,
+              marginBottom: isShowKeyboard ? 120 : 0,
             }}
           >
-            <Image source={FormImageBg} style={styles.formImageBg} />
+            {/* <Image source={FormImageBg} style={styles.formImageBg} /> */}
 
             <Text style={styles.formTitle}>Увійти</Text>
             {errors.email && (
@@ -85,6 +85,7 @@ export const LoginScreen = () => {
                 Електронна пошта невірна
               </Text>
             )}
+
             <CustomInput
               control={control}
               name="email"
@@ -130,8 +131,8 @@ export const LoginScreen = () => {
               </Text>
             </TouchableOpacity>
           </View>
-        </ImageBackground>
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+      </ImageBackground>
     </TouchableWithoutFeedback>
   );
 };
@@ -169,6 +170,10 @@ const styles = StyleSheet.create({
   },
   form: {
     alignItems: "center",
+    backgroundColor: "white",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingBottom: 100,
   },
 
   button: {
@@ -176,7 +181,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FF6C00",
 
     paddingVertical: 16,
-    paddingHorizontal: 145,
+    paddingHorizontal: 140,
     borderRadius: 25,
     marginTop: 43,
     marginBottom: 16,

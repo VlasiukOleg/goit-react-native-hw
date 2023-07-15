@@ -4,26 +4,8 @@ import * as Location from "expo-location";
 import { useState } from "react";
 import { useEffect } from "react";
 
-export const MapScreen = () => {
-  const [location, setLocation] = useState(null);
-  const [errorMsg, setErrorMsg] = useState(null);
-
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
-        return;
-      }
-
-      let location = await Location.getCurrentPositionAsync({});
-      const coords = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      };
-      setLocation(coords);
-    })();
-  }, []);
+export const MapScreen = ({ route }) => {
+  let location = JSON.parse(route.params?.userLocation);
 
   return (
     <View style={styles.container}>

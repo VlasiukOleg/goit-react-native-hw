@@ -10,6 +10,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { HomeScreen } from "./screens/Home/Home";
 import { MapScreen } from "./screens/MapScreen/MapScreen";
 import { CameraScreen } from "./screens/СameraScreen/CamerScreen";
+import { CommentsScreen } from "./screens/CommentsScreen/CommentsScreen";
+
 import { StyleSheet } from "react-native";
 
 const MainStack = createStackNavigator();
@@ -42,6 +44,7 @@ export default function App() {
         />
         <MainStack.Screen name="MapScreen" component={MapScreen} />
         <MainStack.Screen name="CameraScreen" component={CameraScreen} />
+        <MainStack.Screen name="CommentsScreen" component={CommentsScreen} />
       </MainStack.Navigator>
     </NavigationContainer>
   );
