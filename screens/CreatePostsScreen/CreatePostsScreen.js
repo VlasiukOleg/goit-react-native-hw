@@ -7,6 +7,8 @@ import {
   Text,
 } from "react-native";
 
+import uuid from "react-native-uuid";
+
 import CameraAddPhotoIcon from "../../assets/img/add-photo-camera.png";
 import mapIcon from "../../assets/img/map-icon.png";
 import { useNavigation } from "@react-navigation/native";
@@ -65,17 +67,17 @@ export const CreatePostsScreen = () => {
     }
   };
 
-  console.log(location);
-  console.log(image);
-
   const onPublish = () => {
-    console.log(photoName);
-    navigation.navigate("Home", {
+    let postCardObj = {
+      id: uuid.v4(),
       postName: photoName,
       postLocation: photoLocation,
       userLocation: JSON.stringify(location),
       imagePosts: image,
       postView: true,
+    };
+    navigation.navigate("Home", {
+      postCardInfo: postCardObj,
     });
     setImage(null);
     setPhotoName("");
@@ -97,6 +99,21 @@ export const CreatePostsScreen = () => {
             type={type}
             ref={(ref) => setCameraRef(ref)}
           >
+            <TouchableOpacity
+              style={styles.flipContainer}
+              onPress={() => {
+                setType(
+                  type === Camera.Constants.Type.back
+                    ? Camera.Constants.Type.front
+                    : Camera.Constants.Type.back
+                );
+              }}
+            >
+              <Text style={{ fontSize: 18, marginBottom: 10, color: "white" }}>
+                {" "}
+                Flip{" "}
+              </Text>
+            </TouchableOpacity>
             <TouchableOpacity
               style={styles.addCameraPhotoIcon}
               onPress={() => takePicture()}
@@ -136,8 +153,7 @@ export const CreatePostsScreen = () => {
             ...styles.publicBtn,
             backgroundColor: isActiveBtn ? "#FF6C00" : "#F6F6F6",
           }}
-          // disabled={image ? false : true}
-          disabled={false}
+          disabled={isActiveBtn ? false : true}
         >
           <Text
             style={{
@@ -155,7 +171,7 @@ export const CreatePostsScreen = () => {
             backgroundColor: image ? "#FF6C00" : "#F6F6F6",
           }}
           onPress={deletePicture}
-          disabled={isActiveBtn ? false : true}
+          disabled={image ? false : true}
         >
           <Ionicons
             name="trash-outline"
@@ -183,10 +199,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     overflow: "hidden",
   },
+  flipContainer: {
+    alignSelf: "flex-end",
+  },
   addCameraPhotoIcon: {
     position: "absolute",
-    top: 90,
-    left: 141,
+    top: "35%",
+    left: "42%",
   },
   addPhotoBtn: {
     marginTop: 8,

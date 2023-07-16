@@ -59,18 +59,20 @@ export const RegistrationScreen = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ImageBackground source={MainBgImage} style={styles.image}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS == "ios" ? "padding" : "height"}
-          // style={styles.container}
+      <KeyboardAvoidingView
+        behavior={Platform.OS == "ios" ? "padding" : "height"}
+        style={styles.container}
+      >
+        <ImageBackground
+          source={MainBgImage}
+          style={{ ...styles.image, marginBottom: isShowKeyboard ? -150 : 0 }}
         >
           <View
             style={{
               ...styles.form,
-              marginBottom: isShowKeyboard ? 80 : 0,
+              // marginBottom: isShowKeyboard ? -100 : 0,
             }}
           >
-            {/* <Image source={FormImageBg} style={styles.formImageBg} /> */}
             <TouchableOpacity style={styles.btnAdd}>
               <Image source={AddPhotoIcon} style={styles.icon} />
             </TouchableOpacity>
@@ -142,8 +144,8 @@ export const RegistrationScreen = () => {
               <Text style={styles.buttonEnter.text}>Вже є акаунт? Увійти</Text>
             </TouchableOpacity>
           </View>
-        </KeyboardAvoidingView>
-      </ImageBackground>
+        </ImageBackground>
+      </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 };
@@ -152,10 +154,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  formImageBg: {
-    position: "absolute",
-    bottom: -55,
-  },
+
   imageAvatar: {
     position: "absolute",
     top: "-13%",

@@ -16,7 +16,6 @@ import {
 import { CustomInput } from "../CustomInput/CustomInput";
 import MainBgImage from "../../assets/img/main-bg-image.jpg";
 
-import FormImageBg from "../../assets/img/login-bg.png";
 import { useNavigation } from "@react-navigation/native";
 
 import { useForm } from "react-hook-form";
@@ -28,6 +27,7 @@ export const LoginScreen = () => {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [isEmailFocus, setEmailFocus] = useState(false);
   const [isPasswordFocus, setPasswordFocus] = useState(false);
+  const [isShowPassword, setIsShowPassword] = useState(true);
 
   const navigation = useNavigation();
 
@@ -57,21 +57,26 @@ export const LoginScreen = () => {
     reset();
   };
 
+  const showPassword = () => {
+    isShowPassword ? setIsShowPassword(false) : setIsShowPassword(true);
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ImageBackground source={MainBgImage} style={styles.image}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS == "ios" ? "padding" : "height"}
-          // style={styles.container}
+      <KeyboardAvoidingView
+        behavior={Platform.OS == "ios" ? "padding" : "height"}
+        style={styles.container}
+      >
+        <ImageBackground
+          source={MainBgImage}
+          style={{ ...styles.image, marginBottom: isShowKeyboard ? -120 : 0 }}
         >
           <View
             style={{
               ...styles.form,
-              marginBottom: isShowKeyboard ? 120 : 0,
+              // marginBottom: isShowKeyboard ? -120 : 0,
             }}
           >
-            {/* <Image source={FormImageBg} style={styles.formImageBg} /> */}
-
             <Text style={styles.formTitle}>Увійти</Text>
             {errors.email && (
               <Text
@@ -106,14 +111,19 @@ export const LoginScreen = () => {
                 placeholder="Пароль"
                 isLoginFocus={isPasswordFocus}
                 setFocus={setPasswordFocus}
-                secureTextEntry={true}
+                secureTextEntry={isShowPassword}
                 rules={{
                   required: "Пароль обов'язкове поле",
                 }}
                 errorColorText="red"
               />
-              <TouchableOpacity style={styles.buttonShowPassword}>
-                <Text style={styles.buttonShowPassword.text}>Показати</Text>
+              <TouchableOpacity
+                style={styles.buttonShowPassword}
+                onPress={showPassword}
+              >
+                <Text style={styles.buttonShowPassword.text}>
+                  {isShowPassword ? "Показати" : "Скрити"}
+                </Text>
               </TouchableOpacity>
             </View>
 
@@ -131,8 +141,8 @@ export const LoginScreen = () => {
               </Text>
             </TouchableOpacity>
           </View>
-        </KeyboardAvoidingView>
-      </ImageBackground>
+        </ImageBackground>
+      </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 };
@@ -140,10 +150,6 @@ export const LoginScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  formImageBg: {
-    position: "absolute",
-    bottom: -130,
   },
 
   image: {

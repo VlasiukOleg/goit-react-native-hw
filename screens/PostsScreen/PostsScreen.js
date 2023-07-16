@@ -1,18 +1,66 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
 
 import UserAvatar from "../../assets/img/avatar-image.png";
 
 import mapIcon from "../../assets/img/map-icon.png";
 import PostsImageForest from "../../assets/img/posts-image-forest.jpg";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { useState, useEffect } from "react";
 
-import Ionicons from "@expo/vector-icons/Ionicons";
+import { PostCard } from "./PostItem";
+
+const POSTS = [
+  // {
+  //   id: "1",
+  //   image: PostsImageForest,
+  //   postName: "Лісівава",
+  //   postLocation: "Україна",
+  //   userLocation: JSON.stringify({
+  //     latitude: 37.78825,
+  //     longitude: -122.4324,
+  //   }),
+  // },
+  // {
+  //   id: "2",
+  //   image: PostsImageForest,
+  //   postName: "Лісммм",
+  //   postLocation: "Україна",
+  //   userLocation: JSON.stringify({
+  //     latitude: 37.78825,
+  //     longitude: -122.4324,
+  //   }),
+  // },
+];
 
 export const PostsScreen = ({ route }) => {
+  const [posts, setPosts] = useState(POSTS);
   const navigation = useNavigation();
 
-  let image = route.params?.imagePosts;
-  console.log(image);
+  useEffect(() => {
+    {
+      route.params?.postCardInfo &&
+        setPosts([...posts, route.params?.postCardInfo]);
+    }
+  }, [route.params?.postCardInfo]);
+
+  console.log("params", route.params?.postCardInfo);
+
+  // let postCardInfo = {
+  //   id: route.params?.imagePosts,
+  //   image: route.params?.imagePosts,
+  //   postName: route.params?.postName,
+  //   postLocation: route.params?.postLocation,
+  //   userLocation: route.params?.userLocation,
+  // };
+
+  console.log("State", posts);
 
   return (
     <View style={styles.container}>
@@ -23,49 +71,20 @@ export const PostsScreen = ({ route }) => {
           <Text style={styles.userInfo.email}>natali@gmail.com</Text>
         </View>
       </View>
-      {/* <TouchableOpacity onPress={() => navigation.navigate("MapScreen")}>
-        <Image source={mapIcon}></Image>
-      </TouchableOpacity> */}
-      {route.params?.postView && (
-        <View style={styles.postCard}>
-          <View style={{ width: "100%", height: "55%" }}>
-            <Image source={{ uri: image }} style={{ flex: 1 }} />
-          </View>
-
-          <Text style={{ marginTop: 8, marginBottom: 8, fontWeight: 700 }}>
-            {route.params?.postName}
-          </Text>
-          <View
-            style={{ flexDirection: "row", justifyContent: "space-between" }}
-          >
-            <View style={{ flexDirection: "row" }}>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("CommentsScreen")}
-              >
-                <Ionicons
-                  name="chatbubbles-outline"
-                  size={18}
-                  color={"#BDBDBD"}
-                />
-              </TouchableOpacity>
-              <Text style={{ marginLeft: 4, color: "#BDBDBD" }}>0</Text>
-            </View>
-            <View>
-              <TouchableOpacity
-                style={{ flexDirection: "row" }}
-                onPress={() =>
-                  navigation.navigate("MapScreen", {
-                    userLocation: route.params?.userLocation,
-                  })
-                }
-              >
-                <Ionicons name="location-outline" size={18} color={"#BDBDBD"} />
-                <Text>{route.params?.postLocation}</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      )}
+      <View style={styles.postsWrap}>
+        <FlatList
+          data={posts}
+          renderItem={({ item }) => (
+            <PostCard
+              image={item.imagePosts}
+              postLocation={item.postLocation}
+              postName={item.postName}
+              userLocation={item.userLocation}
+            />
+          )}
+          keyExtractor={(item) => item.id}
+        />
+      </View>
     </View>
   );
 };
@@ -81,6 +100,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 32,
+  },
+  postsWrap: {
+    flex: 1,
   },
   avatar: {
     marginRight: 8,
