@@ -12,41 +12,31 @@ import { MapScreen } from "./screens/MapScreen/MapScreen";
 import { CameraScreen } from "./screens/СameraScreen/CamerScreen";
 import { CommentsScreen } from "./screens/CommentsScreen/CommentsScreen";
 
+import { onAuthStateChanged } from "firebase/auth";
+
+import { Main } from "./screens/Main/Main";
+
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+
+import { useNavigation } from "@react-navigation/native";
+
+
 import { StyleSheet } from "react-native";
+import { persistor, store } from "./redux/store";
 
 const MainStack = createStackNavigator();
 
 export default function App() {
+
+  
   return (
-    <NavigationContainer>
-      <MainStack.Navigator initialRouteName="Login">
-        <MainStack.Screen
-          name="Registration"
-          component={RegistrationScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <MainStack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{ headerShown: false }}
-        />
-        <MainStack.Screen
-          name="HomeScreen"
-          component={HomeScreen}
-          // options={headerPostsOptions}
-          options={{ headerShown: false }}
-        />
-        <MainStack.Screen
-          name="CreatePostsScreen"
-          component={CreatePostsScreen}
-        />
-        <MainStack.Screen name="MapScreen" component={MapScreen} />
-        <MainStack.Screen name="CameraScreen" component={CameraScreen} />
-        <MainStack.Screen name="CommentsScreen" component={CommentsScreen} />
-      </MainStack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Main/>
+      </PersistGate>
+    </Provider>
+    
   );
 }
 

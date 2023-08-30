@@ -19,7 +19,7 @@ export const MapScreen = ({ route }) => {
         showsUserLocation={true}
       >
         {location && (
-          <Marker title="I am here" coordinate={location} description="Hello" />
+          <Marker title="I was here" coordinate={location} description="Hello" />
         )}
       </MapView>
     </View>

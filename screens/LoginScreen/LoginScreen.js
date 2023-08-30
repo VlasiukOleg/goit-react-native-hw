@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 
 import {
   ImageBackground,
@@ -12,6 +13,7 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   TouchableWithoutFeedback,
+  Alert,
 } from "react-native";
 import { CustomInput } from "../CustomInput/CustomInput";
 import MainBgImage from "../../assets/img/main-bg-image.jpg";
@@ -19,6 +21,12 @@ import MainBgImage from "../../assets/img/main-bg-image.jpg";
 import { useNavigation } from "@react-navigation/native";
 
 import { useForm } from "react-hook-form";
+
+import { signIn } from "../../redux/auth/operations";
+
+import { auth } from "../../firebase/config";
+import { onAuthStateChanged } from "firebase/auth";
+
 
 const EMAIL_REGEX =
   /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
@@ -31,6 +39,8 @@ export const LoginScreen = () => {
 
   const navigation = useNavigation();
 
+  const dispatch = useDispatch();
+
   const {
     control,
     handleSubmit,
@@ -39,6 +49,12 @@ export const LoginScreen = () => {
   } = useForm();
 
   useEffect(() => {
+    const unSubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigation.navigate("HomeScreen");
+      }
+    });
+   
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
       setIsShowKeyboard(true);
     });
@@ -49,11 +65,13 @@ export const LoginScreen = () => {
     return () => {
       showSubscription.remove();
       hideSubscription.remove();
+      unSubscribe();
     };
   }, []);
 
-  const onSubmit = () => {
-    navigation.navigate("HomeScreen");
+  const onSubmit = (data) => {
+    dispatch(signIn(data));
+
     reset();
   };
 
@@ -64,7 +82,7 @@ export const LoginScreen = () => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
-        behavior={Platform.OS == "ios" ? "padding" : "height"}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.container}
       >
         <ImageBackground
@@ -160,7 +178,7 @@ const styles = StyleSheet.create({
   formTitle: {
     fontSize: 30,
     textAlign: "center",
-    fontWeight: 500,
+    // fontWeight: 500,
     margin: 33,
     marginVertical: 32,
   },

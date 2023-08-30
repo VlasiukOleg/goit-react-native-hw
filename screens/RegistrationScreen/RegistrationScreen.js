@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import * as ImagePicker from "expo-image-picker";
 
 import {
   ImageBackground,
@@ -16,11 +18,15 @@ import { TouchableWithoutFeedback } from "react-native";
 import { useForm } from "react-hook-form";
 
 import MainBgImage from "../../assets/img/main-bg-image.jpg";
-import FormImageBg from "../../assets/img/registration-bg.png";
 import AddPhoto from "../../assets/img/add-photo.png";
-import AddPhotoIcon from "../../assets/img/add-icon.png";
 import { useNavigation } from "@react-navigation/native";
 import { CustomInput } from "../CustomInput/CustomInput";
+import Ionicons from "@expo/vector-icons/Ionicons";
+
+import { auth, storage } from "../../firebase/config";
+import { ref, uploadBytes } from "firebase/storage";
+import { onAuthStateChanged } from "firebase/auth";
+import { signUp } from "../../redux/auth/operations";
 
 export const RegistrationScreen = () => {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
@@ -28,7 +34,11 @@ export const RegistrationScreen = () => {
   const [isEmailFocus, setEmailFocus] = useState(false);
   const [isPasswordFocus, setPasswordFocus] = useState(false);
 
+  const [avatar, setAvatar] = useState(null);
+
   const navigation = useNavigation();
+
+  const dispatch = useDispatch();
 
   const EMAIL_REGEX =
     /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
@@ -40,6 +50,12 @@ export const RegistrationScreen = () => {
   } = useForm();
 
   useEffect(() => {
+    const unSubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigation.navigate("HomeScreen");
+      }
+    });
+
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
       setIsShowKeyboard(true);
     });
@@ -50,17 +66,48 @@ export const RegistrationScreen = () => {
     return () => {
       showSubscription.remove();
       hideSubscription.remove();
+      unSubscribe();
     };
   }, []);
 
-  const onSubmit = () => {
-    navigation.navigate("HomeScreen");
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+
+
+    if (!result.canceled) {
+      setAvatar(result.assets[0].uri);
+    }
   };
+
+  const deleteImage = () => {
+    setAvatar(null);
+  };
+
+
+
+  const onSubmit = async (data) => {
+    const userSignUpData = {
+      ...data,
+      avatar
+    }
+
+    dispatch(signUp(userSignUpData));
+    
+  };
+
+ 
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
-        behavior={Platform.OS == "ios" ? "padding" : "height"}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.container}
       >
         <ImageBackground
@@ -73,11 +120,36 @@ export const RegistrationScreen = () => {
               // marginBottom: isShowKeyboard ? -100 : 0,
             }}
           >
-            <TouchableOpacity style={styles.btnAdd}>
-              <Image source={AddPhotoIcon} style={styles.icon} />
+            <TouchableOpacity
+              style={styles.btnAdd}
+              onPress={avatar ? deleteImage : pickImage}
+            >
+              <View style={styles.iconWrap}>
+                {avatar ? (
+                  <Ionicons
+                    name="close-circle-outline"
+                    size={32}
+                    color={"#E8E8E8"}
+                    style={styles.iconClose}
+                  />
+                ) : (
+                  <Ionicons
+                    name="add-circle-outline"
+                    size={32}
+                    color={"#FF6C00"}
+                    style={styles.icon}
+                  />
+                )}
+              </View>
             </TouchableOpacity>
 
-            <Image source={AddPhoto} style={styles.imageAvatar} />
+            <View style={styles.avatarWrap}>
+              {avatar ? (
+                <Image source={{ uri: avatar }} style={styles.imageAvatar} />
+              ) : (
+                <Image source={AddPhoto} style={styles.imageAvatarPlug} />
+              )}
+            </View>
 
             <Text style={styles.formTitle}>Реєстрація</Text>
             <CustomInput
@@ -155,15 +227,41 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  imageAvatar: {
+  avatarWrap: {
     position: "absolute",
     top: "-13%",
     alignItems: "center",
+    borderRadius: 20,
+    overflow: "hidden",
   },
 
-  icon: {
-    left: 58,
+  imageAvatarPlug: {},
+
+  imageAvatar: {
+    width: 120,
+    height: 120,
+
+    alignItems: "center",
+  },
+
+  iconWrap: {
+    left: "16%",
     bottom: "-40%",
+    backgroundColor: "white",
+    borderRadius: 50,
+
+    width: 32,
+    height: 32,
+  },
+  iconClose: {
+    top: "-5%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  icon: {
+    top: "-8%",
+    alignItems: "center",
+    justifyContent: "center",
   },
   btnAdd: {
     zIndex: 10,
@@ -176,7 +274,7 @@ const styles = StyleSheet.create({
   formTitle: {
     fontSize: 30,
     textAlign: "center",
-    fontWeight: 500,
+    // fontWeight: 500,
     margin: 33,
     marginVertical: 32,
   },

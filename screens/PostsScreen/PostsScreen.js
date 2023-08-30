@@ -5,6 +5,7 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
+  Alert,
 } from "react-native";
 
 import UserAvatar from "../../assets/img/avatar-image.png";
@@ -14,61 +15,67 @@ import PostsImageForest from "../../assets/img/posts-image-forest.jpg";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useState, useEffect } from "react";
 
+import { useSelector } from "react-redux";
+
+import { getUserAvatar, getUserEmail, getUserLogin } from "../../redux/auth/selectors";
+
 import { PostCard } from "./PostItem";
 
-const POSTS = [
-  // {
-  //   id: "1",
-  //   image: PostsImageForest,
-  //   postName: "Лісівава",
-  //   postLocation: "Україна",
-  //   userLocation: JSON.stringify({
-  //     latitude: 37.78825,
-  //     longitude: -122.4324,
-  //   }),
-  // },
-  // {
-  //   id: "2",
-  //   image: PostsImageForest,
-  //   postName: "Лісммм",
-  //   postLocation: "Україна",
-  //   userLocation: JSON.stringify({
-  //     latitude: 37.78825,
-  //     longitude: -122.4324,
-  //   }),
-  // },
-];
+import { onAuthStateChanged } from "firebase/auth";
+
+import { auth } from "../../firebase/config";
+import { getDoc, doc, collection } from "firebase/firestore";
+import { db } from "../../firebase/config";
+
+const POSTS = [];
 
 export const PostsScreen = ({ route }) => {
   const [posts, setPosts] = useState(POSTS);
+  const [login, setLogin] = useState("");
   const navigation = useNavigation();
 
+  const userEmail = useSelector(getUserEmail);
+  const userAvatar = useSelector(getUserAvatar);
+  const userLogin = useSelector(getUserLogin);
+
+  console.log(userAvatar);
+  
+
   useEffect(() => {
+    const unSubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        navigation.navigate("Login");
+      }
+    });
+    (async () => {
+      const docRef = doc(db, "Users", auth.currentUser.uid);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        setLogin(docSnap.data().displayName);
+        console.log("Document data:", docSnap.data().displayName);
+      } else {
+        console.log("No such user!");
+      }
+    })();
     {
       route.params?.postCardInfo &&
         setPosts([...posts, route.params?.postCardInfo]);
     }
+    return () => {
+      unSubscribe();
+    };
   }, [route.params?.postCardInfo]);
 
-  console.log("params", route.params?.postCardInfo);
-
-  // let postCardInfo = {
-  //   id: route.params?.imagePosts,
-  //   image: route.params?.imagePosts,
-  //   postName: route.params?.postName,
-  //   postLocation: route.params?.postLocation,
-  //   userLocation: route.params?.userLocation,
-  // };
-
-  console.log("State", posts);
+ 
 
   return (
     <View style={styles.container}>
       <View style={styles.userWrap}>
-        <Image source={UserAvatar} style={styles.avatar}></Image>
+        <Image source={{uri: userAvatar}} style={styles.avatar}></Image>
         <View style={styles.userInfo}>
-          <Text style={styles.userInfo.name}>Natali Romanov</Text>
-          <Text style={styles.userInfo.email}>natali@gmail.com</Text>
+          <Text style={styles.userInfo.name}>{userLogin}</Text>
+          <Text style={styles.userInfo.email}>{userEmail}</Text>
         </View>
       </View>
       <View style={styles.postsWrap}>
@@ -105,12 +112,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   avatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 5,
     marginRight: 8,
   },
   userInfo: {
     name: {
       fontSize: 13,
-      fontWeight: 700,
+      fontWeight: '700',
     },
     email: {
       fontSize: 11,

@@ -11,7 +11,7 @@ export const PostCard = ({ image, postName, postLocation, userLocation }) => {
         <Image source={{ uri: image }} style={{ flex: 1 }} />
       </View>
 
-      <Text style={{ marginTop: 8, marginBottom: 8, fontWeight: 700 }}>
+      <Text style={{ marginTop: 8, marginBottom: 8, }}>
         {postName}
       </Text>
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>

@@ -12,13 +12,18 @@ import uuid from "react-native-uuid";
 import CameraAddPhotoIcon from "../../assets/img/add-photo-camera.png";
 import mapIcon from "../../assets/img/map-icon.png";
 import { useNavigation } from "@react-navigation/native";
-
 import { Camera } from "expo-camera";
 import { useState, useEffect } from "react";
+
+
 
 import * as Location from "expo-location";
 
 import Ionicons from "@expo/vector-icons/Ionicons";
+
+import { storage, auth, db} from "../../firebase/config";
+import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
+import { setDoc, doc } from "firebase/firestore";
 
 export const CreatePostsScreen = () => {
   const [hasPermission, setHasPermission] = useState(null);
@@ -45,6 +50,7 @@ export const CreatePostsScreen = () => {
         return;
       }
 
+      // !Перенести в takePhoto
       let location = await Location.getCurrentPositionAsync({});
       const coords = {
         latitude: location.coords.latitude,
@@ -67,21 +73,70 @@ export const CreatePostsScreen = () => {
     }
   };
 
-  const onPublish = () => {
+  const onPublish = async () => {
+    const photoPosts = await  uploadPhotoToStorage();
+
     let postCardObj = {
-      id: uuid.v4(),
+      id: auth.currentUser.uid,
       postName: photoName,
       postLocation: photoLocation,
       userLocation: JSON.stringify(location),
-      imagePosts: image,
-      postView: true,
+      imagePosts: photoPosts,
     };
+
+    await uploadPostToDatabase(postCardObj);
+
+
+
     navigation.navigate("Home", {
       postCardInfo: postCardObj,
     });
     setImage(null);
     setPhotoName("");
     setPhotoLocation("");
+  };
+
+  console.log(auth.currentUser.uid);
+
+  const uploadPostToDatabase = async postCardObj => {
+      try {
+        await setDoc(doc(db, "posts", auth.currentUser.uid), postCardObj);
+        console.log('AddPhoto');
+      } catch (error) {
+          console.log(error.message);
+      }
+  }
+
+
+  const uploadPhotoToStorage =  async () => {
+    const blob = await uriToBlob(image);
+    const photoId = Date.now().toString();
+    const imageRef = ref(storage, `postimage/${photoId}`)
+
+    await uploadBytes(imageRef, blob);
+
+    return await getDownloadURL(imageRef);
+   
+  }
+
+  const uriToBlob = uri => {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        // return the blob
+        resolve(xhr.response);
+      };
+
+      xhr.onerror = function () {
+        // something went wrong
+        reject(new Error('uriToBlob failed'));
+      };
+      // this helps us get a blob
+      xhr.responseType = 'blob';
+      xhr.open('GET', uri, true);
+
+      xhr.send(null);
+    });
   };
 
   if (hasPermission === false) {
@@ -153,7 +208,7 @@ export const CreatePostsScreen = () => {
             ...styles.publicBtn,
             backgroundColor: isActiveBtn ? "#FF6C00" : "#F6F6F6",
           }}
-          disabled={isActiveBtn ? false : true}
+          disabled={image ? false : true}
         >
           <Text
             style={{
