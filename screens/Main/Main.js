@@ -59,7 +59,7 @@ export const Main = () => {
             />
             <MainStack.Screen name="MapScreen" component={MapScreen} />
             <MainStack.Screen name="CameraScreen" component={CameraScreen} />
-            <MainStack.Screen name="CommentsScreen" component={CommentsScreen} />
+            <MainStack.Screen name="CommentsScreen" component={CommentsScreen} options={{title: "Коментарі", headerTitleAlign: "center"}}/>
           </MainStack.Navigator>
         </NavigationContainer>
     )

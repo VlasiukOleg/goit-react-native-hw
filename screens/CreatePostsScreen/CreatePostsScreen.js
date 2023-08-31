@@ -23,7 +23,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 
 import { storage, auth, db} from "../../firebase/config";
 import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
-import { setDoc, doc } from "firebase/firestore";
+import { setDoc, doc, collection, addDoc } from "firebase/firestore";
 
 export const CreatePostsScreen = () => {
   const [hasPermission, setHasPermission] = useState(null);
@@ -77,7 +77,7 @@ export const CreatePostsScreen = () => {
     const photoPosts = await  uploadPhotoToStorage();
 
     let postCardObj = {
-      id: auth.currentUser.uid,
+      idUser: auth.currentUser.uid,
       postName: photoName,
       postLocation: photoLocation,
       userLocation: JSON.stringify(location),
@@ -85,8 +85,6 @@ export const CreatePostsScreen = () => {
     };
 
     await uploadPostToDatabase(postCardObj);
-
-
 
     navigation.navigate("Home", {
       postCardInfo: postCardObj,
@@ -96,14 +94,14 @@ export const CreatePostsScreen = () => {
     setPhotoLocation("");
   };
 
-  console.log(auth.currentUser.uid);
 
   const uploadPostToDatabase = async postCardObj => {
       try {
-        await setDoc(doc(db, "posts", auth.currentUser.uid), postCardObj);
+        await addDoc(collection(db, "posts"), postCardObj);
         console.log('AddPhoto');
-      } catch (error) {
-          console.log(error.message);
+      } catch (e) {
+        console.error('Error adding document: ', e);
+        throw e;
       }
   }
 

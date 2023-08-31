@@ -24,22 +24,34 @@ import { PostCard } from "./PostItem";
 import { onAuthStateChanged } from "firebase/auth";
 
 import { auth } from "../../firebase/config";
-import { getDoc, doc, collection } from "firebase/firestore";
+import { getDocs, doc, collection, query, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase/config";
 
-const POSTS = [];
+
 
 export const PostsScreen = ({ route }) => {
-  const [posts, setPosts] = useState(POSTS);
-  const [login, setLogin] = useState("");
+  const [posts, setPosts] = useState([]);
   const navigation = useNavigation();
 
   const userEmail = useSelector(getUserEmail);
   const userAvatar = useSelector(getUserAvatar);
   const userLogin = useSelector(getUserLogin);
 
-  console.log(userAvatar);
-  
+
+  const getPostDataFromDatabase = async () => {
+    try {
+      const q = query(collection(db, 'posts'))
+      
+      onSnapshot(q, data => {
+        setPosts(data.docs.map(doc => ({...doc.data(), id: doc.id})))
+      });
+            
+    } catch (error) {
+      console.log(error);
+            throw error;
+    }
+  }
+
 
   useEffect(() => {
     const unSubscribe = onAuthStateChanged(auth, (user) => {
@@ -47,27 +59,14 @@ export const PostsScreen = ({ route }) => {
         navigation.navigate("Login");
       }
     });
-    (async () => {
-      const docRef = doc(db, "Users", auth.currentUser.uid);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        setLogin(docSnap.data().displayName);
-        console.log("Document data:", docSnap.data().displayName);
-      } else {
-        console.log("No such user!");
-      }
-    })();
-    {
-      route.params?.postCardInfo &&
-        setPosts([...posts, route.params?.postCardInfo]);
-    }
+    getPostDataFromDatabase();
+  
     return () => {
       unSubscribe();
     };
   }, [route.params?.postCardInfo]);
 
- 
+  console.log(posts);
 
   return (
     <View style={styles.container}>
