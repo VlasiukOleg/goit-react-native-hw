@@ -2,8 +2,34 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 
-export const PostCard = ({ image, postName, postLocation, userLocation }) => {
+import { useEffect, useState } from "react";
+
+
+import { db } from "../../firebase/config";
+import { collection, setDoc, doc, query, onSnapshot, orderBy} from "firebase/firestore";
+
+export const PostCard = ({ image, postName, postLocation, userLocation, postId }) => {
   const navigation = useNavigation();
+  const [allComments, setAllComments] = useState([]);
+
+
+  useEffect(() => {
+    getCommentsDataFromDataBase();
+  }, [])
+
+  const getCommentsDataFromDataBase = async () => {
+    try {
+      const q = query(collection(db, `posts/${postId}/comments`), orderBy('date'))
+      
+      onSnapshot(q, data => {
+        setAllComments(data.docs.map(doc => ({...doc.data(), id: doc.id})))
+      });
+            
+    } catch (error) {
+      console.log(error);
+            throw error;
+    }
+  }
 
   return (
     <View style={{ marginBottom: 10 }}>
@@ -17,11 +43,11 @@ export const PostCard = ({ image, postName, postLocation, userLocation }) => {
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <View style={{ flexDirection: "row" }}>
           <TouchableOpacity
-            onPress={() => navigation.navigate("CommentsScreen")}
+            onPress={() => navigation.navigate("CommentsScreen", {imagePost: image, postId: postId})}
           >
-            <Ionicons name="chatbubbles-outline" size={18} color={"#BDBDBD"} />
+            <Ionicons name="chatbubbles-outline" size={18} color={allComments.length > 0 ? "#FF6C00" : "#BDBDBD"} />
           </TouchableOpacity>
-          <Text style={{ marginLeft: 4, color: "#BDBDBD" }}>0</Text>
+          <Text style={{ marginLeft: 4, color: allComments.length > 0 ? "#000000" : "#BDBDBD" }}>{allComments.length}</Text>
         </View>
         <View>
           <TouchableOpacity

@@ -98,7 +98,6 @@ export const CreatePostsScreen = () => {
   const uploadPostToDatabase = async postCardObj => {
       try {
         await addDoc(collection(db, "posts"), postCardObj);
-        console.log('AddPhoto');
       } catch (e) {
         console.error('Error adding document: ', e);
         throw e;

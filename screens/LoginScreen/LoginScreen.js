@@ -22,7 +22,7 @@ import { useNavigation } from "@react-navigation/native";
 
 import { useForm } from "react-hook-form";
 
-import { signIn } from "../../redux/auth/operations";
+import { signIn, authStateChange } from "../../redux/auth/operations";
 
 import { auth } from "../../firebase/config";
 import { onAuthStateChanged } from "firebase/auth";
@@ -48,10 +48,12 @@ export const LoginScreen = () => {
     reset,
   } = useForm();
 
-  useEffect(() => {
+  useEffect(  () => {
     const unSubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
+        dispatch(authStateChange(user));
         navigation.navigate("HomeScreen");
+        console.log(user);
       }
     });
    

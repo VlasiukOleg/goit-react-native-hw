@@ -51,3 +51,19 @@ export const logOut = createAsyncThunk(
     }
 )
 
+export const authStateChange = createAsyncThunk(
+    'auth/statechange', 
+    async (user, thunkApi) => {
+        try {
+            return {
+                userUID: user.uid,
+                userEmail: user.email,
+                userLogin: user.displayName,
+                userAvatar: user.photoURL,
+            };
+        } catch (error) {
+            return thunkApi.rejectWithValue(error.value);
+        }
+    }
+)
+

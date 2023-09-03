@@ -58,13 +58,14 @@ export const PostsScreen = ({ route }) => {
       if (!user) {
         navigation.navigate("Login");
       }
+      console.log(user);
     });
     getPostDataFromDatabase();
   
     return () => {
       unSubscribe();
     };
-  }, [route.params?.postCardInfo]);
+  }, []);
 
   console.log(posts);
 
@@ -86,6 +87,7 @@ export const PostsScreen = ({ route }) => {
               postLocation={item.postLocation}
               postName={item.postName}
               userLocation={item.userLocation}
+              postId={item.id}
             />
           )}
           keyExtractor={(item) => item.id}
